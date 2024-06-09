@@ -1,0 +1,6 @@
+Android软件的运行在环境内不需要签名即可安装，但如果在第三方设备上则需要签名
+
+idea的签名路径默认在  User/.android/debug.keystore
+该文件可由jre包自动创建（例如在你将其删除后），但创建出的签名信息总是不同的，如果apk中的签名信息与环境内不一致（在虚拟机仍在运行时删除了debug.keystore文件），则会报出 Cause: failed to decrypt safe contents entry: java.io.IOException: getSecretKey的异常
+
+补充：如果在虚拟机上安装过a签名后的软件，但我们将a签名删除，再次运行虚拟机编译程序，会有“截图”信息提示我们重新安装程序，但虚拟机仍能直接运行之前a签名后的软件

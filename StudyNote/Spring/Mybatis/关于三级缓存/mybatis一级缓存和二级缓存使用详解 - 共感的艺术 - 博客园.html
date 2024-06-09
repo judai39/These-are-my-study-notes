@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)https://www.cnblogs.com/my-global/p/17182359.html -->
+<html lang="zh-cn" style="--olcb-folder-code-block-max-height: 80vh; --cnb-code-bg: rgb(245, 245, 245); --cnb-code-font-size: 12px; --cnb-code-color: rgb(68, 68, 68);"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="origin-when-cross-origin">
+    <meta name="description" content="mybatis一级缓存和二级缓存使用详解 文章目录 一、概念说明 1、一级缓存 2、二级缓存 3、比较 二、mybatis缓存的生命周期 三、一级缓存的使用 四、二级缓存的使用 五、自定义二级缓存 六、mybatis缓存、spring缓存和redis缓存的使用比较 总结 一、概念说明 myabtis">
+    <meta property="og:description" content="mybatis一级缓存和二级缓存使用详解 文章目录 一、概念说明 1、一级缓存 2、二级缓存 3、比较 二、mybatis缓存的生命周期 三、一级缓存的使用 四、二级缓存的使用 五、自定义二级缓存 六、mybatis缓存、spring缓存和redis缓存的使用比较 总结 一、概念说明 myabtis">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园</title>
+    <link rel="canonical" href="https://www.cnblogs.com/my-global/p/17182359.html">
+    <link rel="shortcut icon" id="favicon" href="https://assets.cnblogs.com/favicon.svg?v=2" type="image/svg+xml">
+    
+    <style>#home :not(.cnblogs_code):not(.cnblogs_Highlighter)>pre:not([highlighted]):not([class*="brush:"]) code:not(.hljs), :not(.cnblogs_code):not(.cnblogs_Highlighter)>pre:not([highlighted]):not([class*="brush:"]) code:not(.hljs) {background: rgb(245, 245, 245);
+        padding: 12px;
+        border: 0.8px solid rgb(204, 204, 204);
+        border-radius: 3px;
+        border-color: transparent;
+        color: rgb(68, 68, 68);
+        font-family: "Courier New", sans-serif;
+        font-size: 12px</style><link rel="stylesheet" href="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/blog-common.min.css">
+    
+
+    <link id="MainCss" rel="stylesheet" href="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/bundle-sea.min.css">
+        <link id="highlighter-theme-cnblogs" type="text/css" rel="stylesheet" href="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/cnblogs.css">
+    
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/bundle-sea-mobile.min.css">
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/my-global/rss">
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/my-global/rsd.xml">
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/my-global/wlwmanifest.xml">
+    <script>
+        var currentBlogId = 583738;
+        var currentBlogApp = 'my-global';
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'sea';
+        var visitorUserId = '';
+        var hasCustomScript = false;
+        window.cb_enable_mathjax = true;
+        window.mathEngine = 0;
+        window.codeHighlightEngine = 1;
+        window.enableCodeLineNumber = false;
+        window.codeHighlightTheme = 'cnblogs';
+        window.darkModeCodeHighlightTheme = 'vs2015';
+        window.isDarkCodeHighlightTheme = false;
+        window.isDarkModeCodeHighlightThemeDark = true;
+        window.isDisableCodeHighlighter = false;
+        window.enableCodeThemeTypeFollowSystem = false;
+        window.enableMacStyleCodeBlock = false;
+    </script>
+        <script>
+            window.currentPostId = 17182359;
+            window.currentPostDateAdded = '2023-03-09 21:24';
+        </script>
+    <script src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/jquery-3.3.1.min.js.下载"></script>
+    <script src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/blog-common.min.js.下载"></script><style>.medium-zoom-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 300ms;
+  will-change: opacity;
+}
+
+.medium-zoom--opened .medium-zoom-overlay {
+  cursor: pointer;
+  cursor: zoom-out;
+  opacity: 1;
+}
+
+.medium-zoom-image {
+  cursor: pointer;
+  cursor: zoom-in;
+  /*
+    The `transition` is marked as "!important" for the animation to happen
+    even though it's overriden by another inline `transition` style attribute.
+
+    This is problematic with frameworks that generate inline styles on their
+    images (e.g. Gatsby).
+
+    See https://github.com/francoischalifour/medium-zoom/issues/110
+   */
+  transition: transform 300ms cubic-bezier(0.2, 0, 0.2, 1) !important;
+}
+
+.medium-zoom-image--hidden {
+  visibility: hidden;
+}
+
+.medium-zoom-image--opened {
+  position: relative;
+  cursor: pointer;
+  cursor: zoom-out;
+  will-change: transform;
+}
+</style>
+    
+<meta property="og:image" content="https://img2023.cnblogs.com/blog/1938730/202303/1938730-20230306005654585-1330473177.png"><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style></head>
+<body class="skin-sea has-navbar mathjax2 hljs-engine"><div id="MathJax_Message" style="display: none;"></div>
+    <a name="top"></a>
+        <div id="bannerbar" class="bannerbar-mobile bannerbar-text-mobile formobile">
+                <a href="https://www.cnblogs.com/cmt/p/18094172" onclick="countCreativeClicks(&#39;M2-博客园-鼠标垫&#39;)" rel="nofollow">
+                    <img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/35695-20240115080910898-1157541931.jpg" alt="" onload="countCreativeImpressionsOnMobile(&#39;M2-博客园-鼠标垫&#39;)">
+                    <span id="m2_impression" style="display:none"></span>
+                </a>
+        </div>
+    <div id="top_nav" class="navbar forpc">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园" role="banner">
+                        <img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/logo.svg" alt="博客园Logo">
+                    </a>
+                </li>
+                <li><a href="https://cnblogs.vip/">会员</a></li>
+                <li><a href="https://cnblogs.vip/store">周边</a></li>
+                <li>
+                    <a href="https://news.cnblogs.com/" onclick="countClicks(&#39;nav&#39;, &#39;skin-navbar-news&#39;)">新闻</a>
+                </li>
+                <li>
+                    <a href="https://q.cnblogs.com/" onclick="countClicks(&#39;nav&#39;, &#39;skin-navbar-q&#39;)">博问</a>
+                </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/cmt/p/18172236" target="_blank">融资</a>
+                    </li>
+                <li><a href="https://market.cnblogs.com/" target="_blank">云市场</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search dropdown" action="https://zzk.cnblogs.com/s" method="get" role="search">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="search" tabindex="3" autocomplete="off">
+                        <button id="zzk_search_button" onclick="window.navbarSearchManager.triggerActiveOption()">
+                            <img id="search_icon" class="focus-hidden" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/search.svg" alt="搜索">
+                            <img class="hidden focus-visible" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/enter.svg" alt="搜索">
+                        </button>
+                        <ul id="navbar_search_options" class="dropdown-menu quick-search-menu">
+                            <li tabindex="0" class="active" onclick="zzkSearch(event, document.getElementById(&#39;zzk_search_input&#39;).value)">
+                                <div class="keyword-wrapper">
+                                    <img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/search.svg" alt="搜索">
+                                    <div class="keyword"></div>
+                                </div>
+                                <span class="search-area">所有博客</span>
+                            </li>
+                                    <li tabindex="1" onclick="zzkBlogSearch(event, &#39;my-global&#39;, document.getElementById(&#39;zzk_search_input&#39;).value)">
+                                        <div class="keyword-wrapper">
+                                            <img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/search.svg" alt="搜索">
+                                            <div class="keyword"></div>
+                                        </div>
+                                        <span class="search-area">当前博客</span>
+                                    </li>
+                        </ul>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="写随笔" title="写随笔" style="display: none;">
+                        <img id="new_post_icon" class="navbar-icon" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/newpost.svg" alt="写随笔">
+                    </a>
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客" style="display: none;">
+                        <img id="myblog_icon" class="navbar-icon" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/myblog.svg" alt="我的博客">
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息" style="display: none;">
+                        <img id="msg_icon" class="navbar-icon" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/message.svg" alt="短消息">
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <a id="navbar_lite_mode_indicator" data-current-page="blog" style="display: none" href="javascript:void(0)" alt="简洁模式" title="简洁模式启用，您在访问他人博客时会使用简洁款皮肤展示">
+                        <img class="navbar-icon" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/lite-mode-on.svg" alt="简洁模式">
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown" style="display: none;">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/avatar-default.svg" alt="用户头像">
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" id="navbar_lite_mode_toggle" title="简洁模式会使用简洁款皮肤显示所有博客">
+    简洁模式 <img id="navbar_lite_mode_on" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/lite-mode-check.svg" class="hide" style="display: none;"><span id="navbar_lite_mode_spinner" class="hide">...</span>
+</a>
+                            <a href="javascript:void(0)" onclick="account.logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup" style="display: inline;">注册</a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="account.login()" style="display: inline;">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+
+    <!--done-->
+<div id="header">
+	
+<!--done-->
+<div class="header">
+	<div class="headerText">
+		<a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/my-global">共感的艺术</a>
+<br>
+		
+	</div>
+</div>
+
+
+</div>
+
+<div id="mytopmenu">
+	
+		<div id="mylinks">
+<a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+ &nbsp;
+
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/my-global/">
+首页</a>
+ &nbsp;
+
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+ &nbsp;
+
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E5%85%B1%E6%84%9F%E7%9A%84%E8%89%BA%E6%9C%AF">
+联系</a> &nbsp;
+
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/my-global/rss/">
+订阅</a>
+<a id="blog_nav_rss_image" href="https://www.cnblogs.com/my-global/rss/">
+    <img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/xml.gif" alt="订阅">
+</a>&nbsp;
+
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+
+
+</div>
+		<div id="mystats"><div id="blog_stats_place_holder"><script>loadBlogStats();</script></div></div>
+	
+</div>
+<div id="centercontent">
+	<div id="post_detail">
+<div class="post">
+	<h1 class="postTitle"><a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/my-global/p/17182359.html" title="发布于 2023-03-09 21:24">
+    <span role="heading" aria-level="2">mybatis一级缓存和二级缓存使用详解</span>
+    
+
+</a><button class="cnblogs-toc-button" title="显示目录导航"></button>
+</h1>
+	<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+<p>mybatis一级缓存和二级缓存使用详解</p>
+<h3 id="文章目录">文章目录<button class="cnblogs-toc-button" title="显示目录导航"></button></h3>
+<ul>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#_6" target="_blank" rel="noopener">一、概念说明</a></li>
+<li>
+<ul>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#1_10" target="_blank" rel="noopener">1、一级缓存</a></li>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#2_20" target="_blank" rel="noopener">2、二级缓存</a></li>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#3_34" target="_blank" rel="noopener">3、比较</a></li>
+</ul>
+</li>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#mybatis_56" target="_blank" rel="noopener">二、mybatis缓存的生命周期</a></li>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#_65" target="_blank" rel="noopener">三、一级缓存的使用</a></li>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#_158" target="_blank" rel="noopener">四、二级缓存的使用</a></li>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#_204" target="_blank" rel="noopener">五、自定义二级缓存</a></li>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#mybatisspringredis_231" target="_blank" rel="noopener">六、mybatis缓存、spring缓存和redis缓存的使用比较</a></li>
+<li><a href="https://laowan.blog.csdn.net/article/details/125563231?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~Rate-7-125563231-blog-122434024.pc_relevant_multi_platform_whitelistv3&amp;utm_relevant_index=12#_246" target="_blank" rel="noopener">总结</a></li>
+</ul>
+<h1 id="一概念说明">一、概念说明<button class="cnblogs-toc-button" title="显示目录导航"></button></h1>
+<p>myabtis的缓存分为一级缓存和<a href="https://so.csdn.net/so/search?q=%E4%BA%8C%E7%BA%A7%E7%BC%93%E5%AD%98&amp;spm=1001.2101.3001.7020" target="_blank" rel="noopener">二级缓存</a>，默认开启一级缓存，关闭二级缓存，<br>
+一级缓存时sqlSession级别，二级缓存是namespace级别。</p>
+<h2 id="1一级缓存">1、一级缓存<button class="cnblogs-toc-button" title="显示目录导航"></button></h2>
+<p>mybatis的一级缓存默认是开启的，它在一个sqlSession会话里面的所有查询操作都会保存到缓存中，一般来说一个请求中的所有增删改查操作都是在同一个sqlSession里面的，所以我们可以认为每个请求都有自己的一级缓存，如果同一个sqlSession会话中2个查询中间有一个 insert 、update或delete 语句，那么之前查询的所有缓存都会清空。</p>
+<p>使用MyBatis开启一次和数据库的会话，MyBatis会创建出一个SqlSession对象表示一次数据库会话，在对数据库的一次会话中， 有可能会反复地执行完全相同的查询语句，每一次查询都会去查一次数据库,为了减少资源浪费，mybaits提供了一种缓存的方式(一级缓存)。</p>
+<p>一级缓存失效：<br>
+如果同一个sqlSession会话中2 个查询中间有一个 insert 、update或delete 语句，那么之前查询的所有缓存都会清空。因为每次增删改操作都有可能会改变原来的数据，所以必须刷新缓存；</p>
+<h2 id="2二级缓存">2、二级缓存<button class="cnblogs-toc-button" title="显示目录导航"></button></h2>
+<p>二级缓存是全局的，也就是说；多个请求可以共用一个缓存，二级缓存需要手动开启。</p>
+<p>二级缓存针对的是同一个namespace，所以建议是在单表操作的Mapper中使用，或者是在相关表的Mapper文件中共享同一个缓存。</p>
+<p>一级缓存无过期时间，只有生命周期，缓存会先放在一级缓存中，当sqlSession会话提交或者关闭时才会将一级缓存刷新到二级缓存中；开启二级缓存后，用户查询时，会先去二级缓存中找，找不到在去一级缓存中找，然后才去数据库查询；</p>
+<p>二级缓存失效：<br>
+所有的update操作(insert,delete,uptede)都会触发缓存的刷新，从而导致二级缓存失效，所以二级缓存适合在读多写少的场景中开启。</p>
+<p>二级缓存过期时间：<br>
+需要注意的是，并不是key-value的过期时间，而是这个cache的过期时间，是flushInterval，意味着整个清空缓存cache，所以不需要后台线程去定时检测。<br>
+每当存取数据的时候，都有检测一下cache的生命时间，默认是1小时，如果这个cache存活了一个小时，那么将整个清空一下。</p>
+<h2 id="3比较">3、比较<button class="cnblogs-toc-button" title="显示目录导航"></button></h2>
+<p>开启方式<br>
+一级缓存是默认开启的，二级缓存默认关闭。</p>
+<ul>
+<li>
+<p>作用范围<br>
+一级缓存是会话级别的缓存，即sqlSession级别，会话结束，清除会话中的缓存数据，实际代码中通过通过开启事务让多个数据库操作共享一个sqlSession。<br>
+二级缓存: 全局级别，也叫namespace级别，会话结束，缓存依然存在，多个请求可以共享缓存数据。</p>
+</li>
+<li>
+<p>缓存位置<br>
+一级缓存由于是sqlSession级别，本质上是在JVM中创建一个Map集合对象保存缓存数据，所以缓存数据保留的地方是本地JVM内存中。<br>
+二级缓存默认也是保存在JVM中，但是可以通过配置将缓存数据保存到第三方缓存中，比如ehcache、redis。保存在redis这些的分布式缓存中，能提供更好的分布式场景的支持。</p>
+</li>
+<li>
+<p>缓存过期<br>
+一级缓存无过期时间，只有生命周期，缓存会先放在一级缓存中，当sqlSession会话提交或者关闭时才会将一级缓存刷新到二级缓存中；开启二级缓存后，用户查询时，会先去二级缓存中找，找不到在去一级缓存中找，然后才去数据库查询；<br>
+二级缓存的过期时间默认是1小时，如果这个cache存活了一个小时，那么将整个清空一下。需要注意的是，并不是key-value的过期时间，而是这个cache的过期时间，是flushInterval，意味着整个清空缓存cache，所以不需要后台线程去定时检测，每当存取数据的时候，都有检测一下cache的生命时间。</p>
+</li>
+</ul>
+<p>小结：<br>
+一级缓存的作用在我看来在实际业务场景中作用真的非常有限，因为需要在一个事务方法中重复查询的需求场景真的太少，而且由于Mysql数据库的MVCC机制以及事务隔离机制-可重复读的能力，会导致同一个事务方法内多次执行相同的查询必定会得到相同的结果，所以在事务范围内的重复查询基本没什么实际作用。<br>
+设计一级缓存设计的意义，可能更多的是为二级缓存的实现做铺垫。<br>
+所以，如果关闭了mybatis的一级缓存，二级缓存将不会生效。</p>
+<h1 id="二mybatis缓存的生命周期">二、mybatis缓存的生命周期<button class="cnblogs-toc-button" title="显示目录导航"></button></h1>
+<ul>
+<li>mybatis的查询缓存会先放在一级缓存中，当sqlSession会话提交或者关闭时才会将一级缓存刷新到二级缓存中；</li>
+<li>开启二级缓存后，用户查询时，会先去二级缓存中找，找不到在去一级缓存中找，然后才去数据库查询；</li>
+</ul>
+<p><img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/1938730-20230306005654585-1330473177.png" alt="在这里插入图片描述" loading="lazy" class="medium-zoom-image"></p>
+<p><img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/1938730-20230306005655117-1673976072.png" alt="在这里插入图片描述" loading="lazy" class="medium-zoom-image"></p>
+<h1 id="三一级缓存的使用">三、一级缓存的使用<button class="cnblogs-toc-button" title="显示目录导航"></button></h1>
+<p>spring开启事务管理的方法在方法执行过程中只会创建一个sqlsession。<br>
+这是因为事务管理下的sql执行方式是BATCH，只会与数据库交互一次，一次执行完所有的sql，所以只会创建一个sqlsession；</p>
+<p><strong>不开启事务：</strong></p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">@Override
+public GoodsStock getStock(Integer goodsId) {
+    log.info("第1次查询");
+    GoodsStock goodsStock = goodsStockMapper.getStock(goodsId);
+    log.info("第2次查询");
+    goodsStock = goodsStockMapper.getStock(goodsId);
+    return goodsStock;
+}
+
+</code></pre>
+<p>执行结果：<br>
+<img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/1938730-20230306005655428-520458899.png" alt="在这里插入图片描述" loading="lazy" class="medium-zoom-image"></p>
+<p><strong>开启事务：</strong></p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">@Override
+@Transactional(rollbackFor = Exception.class)
+public GoodsStock getStock(Integer goodsId) {
+    log.info("第1次查询");
+    GoodsStock goodsStock = goodsStockMapper.getStock(goodsId);
+    log.info("第2次查询");
+    goodsStock = goodsStockMapper.getStock(goodsId);
+    return goodsStock;
+}
+
+</code></pre>
+<p>执行结果：<br>
+<img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/1938730-20230306005655722-399352321.png" alt="在这里插入图片描述" loading="lazy" class="medium-zoom-image"><br>
+可以看到，第2次查询并没有打印查询SQL，说明命中了缓存。</p>
+<p><strong>关闭一级缓存：</strong><br>
+在配置文件中添加如下属性<br>
+#一级缓存关闭，默认值SESSION，表示开启一级缓存，statement表示关闭一级缓存</p>
+<pre class="highlighter-hljs"><code class="language-java highlighter-hljs">mybatis.configuration.local-cache-scope=statement
+</code></pre>
+<p><strong>再次请求：</strong><br>
+<img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/1938730-20230306005656058-1994858962.png" alt="在这里插入图片描述" loading="lazy" class="medium-zoom-image"><br>
+通过添加配置关闭mybatis的一级缓存后，第2次查询打印了SQL，进行了查库操作。</p>
+<p>说实话，一级缓存比较鸡肋，一般在同一个方法内，很少会进行重复的查询，在实际业务中的真实使用场景暂时没有想到。目前的实际意义更多的是为mybatis的二级缓存做一个铺垫。</p>
+<p><strong>关于一级缓存的使用注意：</strong><br>
+1、一般在一个方法内需要用相同条件查询多次的场景其实非常少见，因为方法体内对象都是可见共享的，没必要再次进行查询。<br>
+2、如果需要再次查询判断之前的查询结果是否已经出现变更，这时除了需要关闭一级缓存外，还需要注意事务的隔离级别。<br>
+比如，<br>
+如果事务隔离级别为可重复读时，在本事务中尽管执行多次查询，由于会对查询的数据在事务范围内加读锁，所以查询的数据一定是相同的，没有重复查下的必要。<br>
+如果事务隔离级别为读已提交，需要进行重复查询判断数据的变化情况，那么需要关闭mybatis的一级缓存。</p>
+<p>不过，推荐在需要多次查询做数据比对的场景，最好还是关闭事务，这样就可以保障每次查询都进行查库操作，获取最新的数据。</p>
+<p>事务为可重复读级别REPEATABLE_READ，没有再次查询的必要，数据一定不会发生变更：</p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">@Override
+@Transactional(rollbackFor = Exception.class,isolation=Isolation.REPEATABLE_READ,readOnly = true)
+public GoodsStock getStock(Integer goodsId) {
+    log.info("第1次查询");
+    //由于是REPEATABLE_READ可重复读隔离级别，在事务范围内会对读取到的数据加锁，所以读取到的数据一定不会发生变更，没有再次查询的必要
+    GoodsStock goodsStock = goodsStockMapper.getStock(goodsId);
+    log.info("第2次查询");
+    goodsStock = goodsStockMapper.getStock(goodsId);
+    return goodsStock;
+}
+
+</code></pre>
+<p>事务为读已提交READ_COMMITTED，由于读锁会立即释放，导致事务范围内已经查询到的数据可能被其他事务修改，如果需要重复查库判断数据变化，那么必须关闭mybatis的一级缓存，不然2次查询不会进行查库操作。<br>
+如果在1次查询和2 次查询中的逻辑处理有一个 insert 、update或delete 操作，那么之前查询的所有缓存都会清空。<br>
+2次查询也会进行查库操作。</p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">@Override
+@Transactional(rollbackFor = Exception.class,isolation=Isolation.READ_COMMITTED,readOnly = true)
+public GoodsStock getStock(Integer goodsId) {
+    log.info("第1次查询");
+    //由于是REPEATABLE_READ可重复读隔离级别，在事务范围内会对读取到的数据加锁，所以读取到的数据一定不会发生变更，没有再次查询的必要
+    GoodsStock goodsStock1 = goodsStockMapper.getStock(goodsId);
+    log.info("逻辑处理");
+
+    log.info("第2次查询，判断变化，需要关闭mybatis的一级缓存");
+    GoodsStock goodsStock2 = goodsStockMapper.getStock(goodsId);
+    return goodsStock2;
+}
+
+</code></pre>
+<h1 id="四二级缓存的使用">四、二级缓存的使用<button class="cnblogs-toc-button" title="显示目录导航"></button></h1>
+<p>二级缓存相关的配置有三个地方：<br>
+1、mybatis-config中有一个全局配置属性，这个不配置也行，因为默认就是true。</p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">&lt;setting name="cacheEnabled" value="true"/&gt;
+
+</code></pre>
+<p>spring boot中也可以通过配置项开启二级缓存：</p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">#二级缓存开启
+mybatis.configuration.cache-enabled=true    
+
+</code></pre>
+<p>2、在Mapper映射文件内需要配置缓存标签：</p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">&lt;cache eviction="LRU" flushInterval="60000" size="1000"/&gt;
+
+</code></pre>
+<p><strong>配置项说明：</strong></p>
+<ul>
+<li>
+<p>eviction 淘汰策略，LRU、FIFO</p>
+</li>
+<li>
+<p>size 缓存个数</p>
+</li>
+<li>
+<p>flushInterval 刷新频率，即缓存过期时间</p>
+</li>
+</ul>
+<p>LruCache LRU淘汰策略缓存（默认淘汰策略） 当缓存达到上限，删除最近最少使用缓存 eviction=“LRU”<br>
+FifoCache FIFO淘汰策略缓存 当缓存达到上限，删除最先入队的缓存 eviction=“FIFO”</p>
+<p>3、在select查询语句标签上配置useCache属性，如下：</p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">  &lt;select id="selectUserAndJob" resultMap="JobResultMap2" useCache="true"&gt;
+      select * from lw_user
+  &lt;/select&gt;
+
+</code></pre>
+<p>以上配置第1点是默认开启的，也就是说我们只要配置第2点就可以打开二级缓存了，而第3点是当我们需要针对某一条语句来配置二级缓存的时候则可以使用。</p>
+<p>4、开启二级缓存后，映射的pojo对象需要实现序列化接口<br>
+<img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/1938730-20230306005656534-1038125541.png" alt="在这里插入图片描述" loading="lazy" class="medium-zoom-image"></p>
+<p>执行结果报序列化异常，那是因为我们映射的pojo对象未实现序列化接口，说明我们从缓存数据中读取数据需要进行反序列化，这是因 为mybatis的二级缓存的缓存介质有多种多样，而并不一定是在内存中，所以需要我们对pojo对象进行序列化，只要实现序列化接口即可。</p>
+<h1 id="五自定义二级缓存">五、自定义二级缓存<button class="cnblogs-toc-button" title="显示目录导航"></button></h1>
+<p>默认的二级缓存也是存储在本地缓存，对于微服务下是可能出现脏读的情况的，这时可能会需要自定义缓存，比如利用redis来存储缓存，而不是存储在本地内存当中。</p>
+<p>MyBatis官方也提供了第三方缓存的支持引入pom文件：</p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">&lt;dependency&gt;
+  &lt;groupId&gt;org.mybatis.caches&lt;/groupId&gt;
+  &lt;artifactId&gt;mybatis-redis&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0-beta2&lt;/version&gt;
+&lt;/dependency&gt;
+
+</code></pre>
+<p>然后缓存配置如下：</p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">&lt;cache type="org.mybatis.caches.redis.RedisCache"&gt;&lt;/cache&gt;
+
+</code></pre>
+<p>然后在默认的resource路径下新建一个redis.properties文件：</p>
+<pre class="highlighter-hljs"><code class="highlighter-hljs">host=localhost
+port=6379
+
+</code></pre>
+<h1 id="六mybatis缓存spring缓存和redis缓存的使用比较">六、mybatis缓存、spring缓存和redis缓存的使用比较<button class="cnblogs-toc-button" title="显示目录导航"></button></h1>
+<ul>
+<li>mybatis缓存——dao层的缓存，主要是对select查库操作的结果进行缓存。</li>
+<li>spring缓存——方法级别的缓存，主要通过在方法上添加缓存注解@CachePut、@CacheEvict来实现。</li>
+<li>redisTemplate缓存——代码级别的缓存,主要是在方法体内部通过redisTemplate模板类编码控制缓存读写。</li>
+</ul>
+<p>mybatis缓存只能对sql查询结果进行缓存，spring 缓存只能对方法执行结果进行缓存，不能对方法执行过程中的中间对象进行缓存。这两者的优点都是使用简单，只需简单的配置或添加注解即可实现缓存，基本不需要编码。<br>
+缺点是缓存的控制范围都是方法级别，不能缓存方法执行过程中的中间对象，有一定的使用局限性。</p>
+<p>而通过redisTemplate进行编码控制缓存，优点是控制灵活，缺点是需要编码实现。</p>
+<p>实际项目中大家可以根据需要选择怎么使用缓存，但是要注意，针对单一方法，缓存不要混用，容易造成逻辑混乱，定位问题困难等问题。</p>
+<h1 id="总结">总结<button class="cnblogs-toc-button" title="显示目录导航"></button></h1>
+<p>本文主要是针对mybatis的一级缓存和二级缓存的区别和使用进行了详细介绍。重点掌握一下方面<br>
+1、一级缓存和二级缓存的区别<br>
+2、mybatis缓存的生命周期<br>
+3、如何开启二级缓存，二级缓存什么时候失效，如何将本地的二级缓存升级到采用redis支持分布式的二级缓存？<br>
+4、二级缓存的淘汰策略有哪些<br>
+5、mybatis缓存、spring缓存和redis缓存的比较。</p>
+<p>mybatis的一级缓存是为了二级缓存做铺垫，如果采用二级缓存，推荐升级到采用redis存储缓存数据，这样能更好的支持分布式。<br>
+————————————————</p>
+
+</div>
+<div class="clear"></div>
+<div id="blog_post_info_block" role="contentinfo">
+
+
+<div id="BlogPostCategory">
+    分类: 
+            <a href="https://www.cnblogs.com/my-global/category/2284997.html" target="_blank">java / 框架 / mybatis</a>
+</div>
+
+    <div id="blog_post_info">
+<div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(17182359,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+        <a id="green_channel_follow" onclick="follow(&#39;a92b0b56-436f-41fa-4b8a-08d7abbf9b94&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_wechat" href="javascript:void(0);" onclick="shareManager.wechatShare()">微信分享</a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/my-global/" target="_blank"><img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/20200308111546.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/my-global/">共感的艺术</a>
+            <br>
+            <a href="https://home.cnblogs.com/u/my-global/followers/">粉丝 - <span class="follower-count">5</span></a>
+            <a href="https://home.cnblogs.com/u/my-global/followees/">关注 - <span class="following-count">2</span></a><br>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow" class="follow-tip">
+                <a href="javascript:void(0);" onclick="follow(&#39;a92b0b56-436f-41fa-4b8a-08d7abbf9b94&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(17182359,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(17182359,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+        <div id="vip_tip"><a class="tip" href="https://cnblogs.vip/" target="_blank">升级成为会员</a></div>
+</div>
+
+<script type="text/javascript">
+    currentDiggType = 0;
+</script>
+</div>
+    <div class="clear"></div>
+    <div id="post_next_prev">
+
+    <a href="https://www.cnblogs.com/my-global/p/17182358.html" class="p_n_p_prefix">« </a> 上一篇：    <a href="https://www.cnblogs.com/my-global/p/17182358.html" data-featured-image="" title="发布于 2023-03-09 21:23">[java-spring]-JPA使用手册</a>
+    <br>
+    <a href="https://www.cnblogs.com/my-global/p/17182368.html" class="p_n_p_prefix">» </a> 下一篇：    <a href="https://www.cnblogs.com/my-global/p/17182368.html" data-featured-image="" title="发布于 2023-03-09 21:25">[java-project-gl]支付</a>
+
+</div>
+</div>
+	<div class="postDesc">posted on 
+<span id="post-date" data-last-update-days="435.50856754935415" data-date-created="BlogServer.Application.Dto.BlogPost.BlogPostDto" data-date-updated="2023-03-09 21:24" aria-expanded="false">2023-03-09 21:24</span>&nbsp;
+<a href="https://www.cnblogs.com/my-global">共感的艺术</a>&nbsp;
+阅读(<span id="post_view_count">2979</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=17182359" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(17182359);return false;">收藏</a>&nbsp;
+<a href="javascript:void(0)" onclick="reportManager.report({ currentUserId: &#39;&#39;, targetType: &#39;blogPost&#39;, targetId: &#39;17182359&#39;, targetLink: &#39;https://www.cnblogs.com/my-global/p/17182359.html&#39;, title: &#39;mybatis一级缓存和二级缓存使用详解&#39; })">举报</a>
+</div>
+</div>
+
+
+<script>
+    var cb_entryId = 17182359, cb_entryCreatedDate = '2023-03-09 21:24', cb_postType = 1, cb_postTitle = 'mybatis一级缓存和二级缓存使用详解';
+    var allowComments = true, cb_blogId = 583738, cb_blogApp = 'my-global', cb_blogUserGuid = 'a92b0b56-436f-41fa-4b8a-08d7abbf9b94';
+    mermaidRender.render()
+    markdown_highlight()
+    zoomManager.apply("#cnblogs_post_body img:not(.code_img_closed):not(.code_img_opened)");    
+</script>
+<a id="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav">
+            <a class="comment-nav-left forpc" href="https://cnblogs.vip/" target="_blank">会员力量，点亮园子希望</a>
+        <div class="comment-nav-right">
+            <span id="span_refresh_tips"></span><a href="https://www.cnblogs.com/my-global/p/17182359.html#" onclick="return RefreshPage();">刷新页面</a><a href="https://www.cnblogs.com/my-global/p/17182359.html#top">返回顶部</a>
+        </div>
+    </div>
+    <div id="comment_form_container"><div class="login_tips">
+    登录后才能查看或发表评论，立即 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return account.login(&#39;!comments&#39;);">登录</a> 或者
+    <a href="https://www.cnblogs.com/">逛逛</a> 博客园首页
+</div>
+</div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+        <div id="cnblogs_ch"></div>
+    <div id="opt_under_post"></div>
+        <div id="cnblogs_c1" class="under-post-card">
+            <a href="https://cnblogs.vip/buy" rel="nofollow" target="_blank" onclick="countCreativeClicks(&#39;C1-博客园-会员&#39;)">
+                <img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/35695-20240328092537879-1189167464.jpg" onload="countCreativeImpressions(&#39;C1-博客园-会员&#39;)" alt="">
+                <span id="c1_impression" style="display:none"></span>
+            </a>
+        </div>
+    <div id="under_post_card1"><div class="under-post-card">
+<b>编辑推荐：</b>
+<br>
+
+· <a href="https://www.cnblogs.com/apocelipes/p/18195214" target="_blank">因为我的一次疏忽而带来的 golang1.23 新特性</a>
+    <br>
+· <a href="https://www.cnblogs.com/vipwan/p/18194062/biwen-quickapi-scheduletask" target="_blank">NETCore 中实现一个轻量无负担的极简任务调度 ScheduleTask</a>
+    <br>
+· <a href="https://www.cnblogs.com/czwy/p/18192720" target="_blank">WPF 使用 Shape 实现复杂线条动画</a>
+    <br>
+· <a href="https://www.cnblogs.com/gmmy/p/18186750" target="_blank">使用 c# 强大的表达式树实现对象的深克隆</a>
+    <br>
+· <a href="https://www.cnblogs.com/alchemystar/p/18188082" target="_blank">日常 Bug 排查 - 连接突然全部关闭</a>
+    <br>
+</div></div>
+    <div id="under_post_card2"><div class="itnews under-post-card">
+    <b>阅读排行：</b>
+    <br>
+ ·          <a href="https://www.cnblogs.com/fuxing/p/18195644" target="_blank">谈谈为什么要分库分表？</a>
+        <br>
+ ·          <a href="https://www.cnblogs.com/learn-gz/p/18196642" target="_blank">mini-centos7 环境安装部署，各种踩坑。。。</a>
+        <br>
+ ·          <a href="https://www.cnblogs.com/shanyou/p/18197134" target="_blank">Dapr 与 .NET Aspire 结合使用获得无与伦比的本地开发体验</a>
+        <br>
+ ·          <a href="https://www.cnblogs.com/edisonchou/p/-/industrial-control-plc-connector-02" target="_blank">初识上位机（下）：C#读写PLC数据块数据</a>
+        <br>
+ ·          <a href="https://www.cnblogs.com/zhennann/p/18195691" target="_blank">开发vue3，真的可以不用ref/reactive了，也不需要ref.value</a>
+        <br>
+</div></div>
+    <div id="HistoryToday" class="under-post-card"></div>
+    <script type="text/javascript">
+        var commentManager = new blogCommentManager();
+        commentManager.renderComments(0);
+        fixPostBody();
+        window.footnoteTipManager.generateFootnoteTips();
+
+            window.tocManager.displayDisableTocTips = false;
+            window.tocManager.generateToc();
+            
+                setTimeout(function() { countViews(cb_blogId, cb_entryId); }, 50);
+            
+            deliverT2();
+            deliverC1C2();
+            loadNewsAndKb();
+            
+                LoadPostCategoriesTags(cb_blogId, cb_entryId);
+            
+            LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+            GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+            loadOptUnderPost();
+            GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+                </script>
+</div>
+
+</div>
+
+
+</div>
+<div id="leftcontent">
+	
+		<div id="leftcontentcontainer">
+			<div id="sidebar_news" class="newsItem">
+    <!--done-->
+<div class="newsItem">
+	<div id="blog-news">    
+    <div id="sidebar_news_content">
+<div id="profile_block">
+    昵称：
+    <a href="https://home.cnblogs.com/u/my-global/">
+        共感的艺术
+    </a>
+    <br>
+    园龄：
+    <a href="https://home.cnblogs.com/u/my-global/" title="入园时间：2020-02-09">
+        4年3个月
+    </a>
+    <br>
+    粉丝：
+    <a class="follower-count" href="https://home.cnblogs.com/u/my-global/followers/">
+        5
+    </a>
+    <br>
+    关注：
+    <a class="folowing-count" href="https://home.cnblogs.com/u/my-global/followees/">
+        2
+    </a>
+    <div id="p_b_follow" class="follow-tip">
+<a href="javascript:void(0)" onclick="follow(&#39;a92b0b56-436f-41fa-4b8a-08d7abbf9b94&#39;)">+加关注</a></div>
+    <script>getFollowStatus('a92b0b56-436f-41fa-4b8a-08d7abbf9b94');</script>
+</div>
+</div>
+</div>
+<script>loadBlogNews();</script>
+</div>
+
+ 
+</div>
+<div id="sidebar_c3"></div>
+			<div id="calendar"><div id="blog-calendar" style="">
+
+<table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar" border="0">
+    <tbody>
+        <tr>
+            <td colspan="7">
+                <table class="CalTitle" cellspacing="0" border="0">
+                    <tbody>
+                        <tr>
+                            <td class="CalNextPrev">
+                                <a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2024/04/18&#39;); return false;">&lt;</a>
+                            </td>
+                            <td align="center">2024年5月</td>
+                            <td align="right" class="CalNextPrev">
+                                <a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2024/06/18&#39;); return false;">&gt;</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    <tr>
+        <th class="CalDayHeader" align="center" abbr="日" scope="col">日</th>
+        <th class="CalDayHeader" align="center" abbr="一" scope="col">一</th>
+        <th class="CalDayHeader" align="center" abbr="二" scope="col">二</th>
+        <th class="CalDayHeader" align="center" abbr="三" scope="col">三</th>
+        <th class="CalDayHeader" align="center" abbr="四" scope="col">四</th>
+        <th class="CalDayHeader" align="center" abbr="五" scope="col">五</th>
+        <th class="CalDayHeader" align="center" abbr="六" scope="col">六</th>
+    </tr>
+            <tr>
+                            <td class="CalOtherMonthDay" align="center">28</td>
+                            <td class="CalOtherMonthDay" align="center">29</td>
+                            <td class="CalOtherMonthDay" align="center">30</td>
+                        <td class="" align="center">
+                            1
+                        </td>
+                        <td class="" align="center">
+                            2
+                        </td>
+                        <td class="" align="center">
+                            3
+                        </td>
+                    <td class="CalWeekendDay" align="center">
+                        4
+                    </td>
+            </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center">
+                            5
+                        </td>
+                            <td class="" align="center">
+                                6
+                            </td>
+                            <td class="" align="center">
+                                7
+                            </td>
+                            <td class="" align="center">
+                                8
+                            </td>
+                            <td class="" align="center">
+                                9
+                            </td>
+                            <td class="" align="center">
+                                10
+                            </td>
+                        <td class="CalWeekendDay" align="center">
+                            11
+                        </td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center">
+                            12
+                        </td>
+                            <td class="" align="center">
+                                13
+                            </td>
+                            <td class="" align="center">
+                                14
+                            </td>
+                            <td class="" align="center">
+                                15
+                            </td>
+                            <td class="" align="center">
+                                16
+                            </td>
+                            <td class="" align="center">
+                                17
+                            </td>
+                        <td class="CalTodayDay" align="center">
+                            18
+                        </td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center">
+                            19
+                        </td>
+                            <td class="" align="center">
+                                20
+                            </td>
+                            <td class="" align="center">
+                                21
+                            </td>
+                            <td class="" align="center">
+                                22
+                            </td>
+                            <td class="" align="center">
+                                23
+                            </td>
+                            <td class="" align="center">
+                                24
+                            </td>
+                        <td class="CalWeekendDay" align="center">
+                            25
+                        </td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center">
+                            26
+                        </td>
+                            <td class="" align="center">
+                                27
+                            </td>
+                            <td class="" align="center">
+                                28
+                            </td>
+                            <td class="" align="center">
+                                29
+                            </td>
+                            <td class="" align="center">
+                                30
+                            </td>
+                            <td class="" align="center">
+                                31
+                            </td>
+                        <td class="CalOtherMonthDay" align="center">
+                            1
+                        </td>
+                </tr>
+                <tr>
+                        <td class="CalOtherMonthDay" align="center">
+                            2
+                        </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                3
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                4
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                5
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                6
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                7
+                            </td>
+                        <td class="CalOtherMonthDay" align="center">
+                            8
+                        </td>
+                </tr>
+    </tbody>
+</table></div></div>                
+                    <script>loadBlogDefaultCalendar();</script><br>
+			<div id="blog-sidecolumn"><!-- 搜索 -->
+<div id="sidebar_search" class="sidebar-block">
+    <div class="mySearch my-search">
+        <h3 class="catListTitle">搜索</h3>
+        <div id="sidebar_search_box">
+            <div id="widget_my_zzk" class="div_my_zzk">
+                <input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk">
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- 常用链接 -->
+<div id="sidebar_shortcut" class="sidebar-block">
+<h3 class="catListTitle">
+常用链接
+</h3>
+<ul>
+    <li><a href="https://www.cnblogs.com/my-global/p/" title="我的博客的随笔列表">我的随笔</a></li>
+<li><a href="https://www.cnblogs.com/my-global/MyComments.html" title="我的发表过的评论列表">我的评论</a></li>
+<li><a href="https://www.cnblogs.com/my-global/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li>
+<li><a href="https://www.cnblogs.com/my-global/comments" title="我的博客的评论列表">最新评论</a></li>
+<li><a href="https://www.cnblogs.com/my-global/tag/" title="我的博客的标签列表">我的标签</a></li>
+
+</ul>
+</div>
+
+<!-- 最新随笔 -->
+
+
+<!-- 我的标签 -->
+<div id="sidebar_toptags" class="sidebar-block"><h3><a href="https://www.cnblogs.com/my-global/tag/" class="sidebar-card-title-a">我的标签</a></h3>
+<div id="MyTag">
+    <ul>
+                <li>
+            <a href="https://www.cnblogs.com/my-global/tag/selenium/">selenium<span class="tag-count">(40)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/my-global/tag/urllib/">urllib<span class="tag-count">(19)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/my-global/tag/requests/">requests<span class="tag-count">(13)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/my-global/tag/mysql/">mysql<span class="tag-count">(13)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/my-global/tag/redis/">redis<span class="tag-count">(7)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/my-global/tag/BS4/">BS4<span class="tag-count">(6)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/my-global/tag/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/">网络安全<span class="tag-count">(6)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/my-global/tag/%E7%BB%98%E5%9B%BE/">绘图<span class="tag-count">(6)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/my-global/tag/xpath/">xpath<span class="tag-count">(5)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/my-global/tag/MongoDB/">MongoDB<span class="tag-count">(5)</span></a>
+        </li>
+    <li>
+        <a href="https://www.cnblogs.com/my-global/tag/">更多</a>
+    </li>
+
+    </ul>
+</div>
+</div>
+
+<!-- 积分与排名 -->
+
+
+<!-- 随笔分类、随笔档案、文章分类、新闻分类、相册、链接 -->
+<div id="sidebar_categories">
+
+    <h3 class="catListTitle">
+        
+    <a class="sidebar-card-title-a" href="https://www.cnblogs.com/my-global/post-categories">随笔分类</a>
+
+
+
+    </h3>
+    <ul class="catList">
+            <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282707.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">c(0)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282976.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">git(1)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282705.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">go(7)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282696.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">java(59)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282693.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">python(0)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282694.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">数据库(17)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282692.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">系统(0)</a>
+
+            </li>                
+    </ul>
+    <h3 class="catListTitle">
+        
+随笔档案
+
+
+    </h3>
+    <ul class="catList">
+            <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/p/archive/2023/05" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">2023年5月(1)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/p/archive/2023/03" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">2023年3月(83)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/p/archive/2022/03" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">2022年3月(2)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/p/archive/2020/03" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">2020年3月(86)</a>
+
+            </li>                
+    </ul>
+    <h3 class="catListTitle">
+        
+    <a class="sidebar-card-title-a" href="https://www.cnblogs.com/my-global/article-categories">文章分类</a>
+
+
+
+    </h3>
+    <ul class="catList">
+            <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282715.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">java(0)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282717.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">python(0)</a>
+
+            </li>                    <li class="catListItem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/my-global/category/2282720.html" style="--cnb-category-item-link-indent-size: calc(0 * 1em)" class="category-item-link" rel="" target="">系统(0)</a>
+
+            </li>                
+    </ul>
+</div>
+
+<!-- 最新评论 -->
+<!-- 阅读排行榜 -->
+<div id="sidebar_topviewedposts" class="sidebar-block">
+<div id="topview_posts_wrap">
+    <h3 class="catListTitle">
+        <a href="https://www.cnblogs.com/my-global/most-viewed" class="sidebar-card-title-a">
+    阅读排行榜
+</a>
+
+    </h3>
+    <div id="TopViewPostsBlock">
+        <ul style="word-break:break-all">
+                    <li>
+                        <a href="https://www.cnblogs.com/my-global/p/17182359.html">
+                            1. mybatis一级缓存和二级缓存使用详解(2979)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/my-global/p/12484156.html">
+                            2. str转json | python的list、dict转json string | json读写 | jsonpath操作(2954)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/my-global/p/12467798.html">
+                            3. requests的session的操作，登录一次之后，保持登录状态(2399)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/my-global/p/12467545.html">
+                            4. selenium页面加载慢的问题(2220)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/my-global/p/12467620.html">
+                            5. selenium提取网页文本(1966)
+                        </a>
+                    </li>
+        </ul>
+    </div>
+</div></div>
+
+<!-- 评论排行榜 -->
+<div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+    <h3 class="catListTitle">
+        <a href="https://www.cnblogs.com/my-global/most-commented" class="sidebar-card-title-a">评论排行榜</a>
+
+    </h3>
+    <div id="TopFeedbackPostsBlock">
+        <ul style="word-break:break-all">
+                    <li>
+                        <a href="https://www.cnblogs.com/my-global/p/17182388.html">
+                            1. [java]-Activiti使用指南(1)
+                        </a>
+                    </li>
+        </ul>
+    </div>
+</div></div>
+
+<!-- 推荐排行榜 -->
+<div id="sidebar_topdiggedposts" class="sidebar-block">
+<div id="topdigg_posts_wrap">
+    <div class="catListView">
+        <h3 class="catListTitle">
+            <a href="https://www.cnblogs.com/my-global/most-liked" class="sidebar-card-title-a">推荐排行榜</a>
+
+        </h3>
+        <div id="TopDiggPostsBlock">
+            <ul style="word-break: break-all">
+                        <li>
+                            <a href="https://www.cnblogs.com/my-global/p/17182393.html">
+                                1. 偏向锁、轻量级锁、自旋锁、重量级锁，看这一篇就够了(1)
+                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div></div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap" class="RecentComment">
+    <h3 class="catListTitle"><a href="https://www.cnblogs.com/my-global/comments" class="sidebar-card-title-a">最新评论</a></h3>    
+    <div class="RecentCommentBlock">
+        <ul>
+                <li class="recent_comment_title"><a href="https://www.cnblogs.com/my-global/p/17182388.html">1. Re:[java]-Activiti使用指南</a></li>
+                <li class="recent_comment_body">推荐人民邮电出版社最新出品力作《深入Activiti流程引擎：核心原理与高阶实战》，一本必备的Activiti实战指南，由国内顶尖工作流专家倾力打造，让你轻松掌握Activiti的核心原理与高阶实战技...</li>
+                <li class="recent_comment_author">--activiti2023</li>
+                <li class="recent_comment_title"><a href="https://www.cnblogs.com/my-global/articles/12887153.html">2. Re:centos7 安装 Mysql 5.7.27，详细完整教程</a></li>
+                <li class="recent_comment_body"><p>感谢作者。</p>
+</li>
+                <li class="recent_comment_author">--dotNet修行之路</li>
+                <li class="recent_comment_title"><a href="https://www.cnblogs.com/my-global/articles/12616239.html">3. Re:解决studio 3T时间到期的两种方法</a></li>
+                <li class="recent_comment_body"><p>2020.4没用了</p>
+</li>
+                <li class="recent_comment_author">--河蟹涉贿</li>
+        </ul>
+    </div>
+</div></div>
+
+
+</div>
+                    <script>loadBlogSideColumn();</script></div>
+	
+</div>
+<!--done-->
+<div class="footer">
+	Powered by: <a href="http://www.cnblogs.com/">博客园</a>
+	Copyright © 2024 共感的艺术
+<br><span id="poweredby">Powered by .NET 8.0 on Kubernetes</span>
+
+</div>
+
+
+
+
+
+
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8C838EyK0EpKpQQcC9VwxBn-JRD2SonclKsVoqQv1AZpXXPeKcsoBa6eFmZfHh452VXxFqC4r5VlgVpQksL64NP6yg0HbkniWC6wb4czSIepJsoMx6xxQBFKVDBWcnqwOYTU_WDh1XMruKu-TQPnqFI">
+    <script async="" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/js"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-M95P3TTWJZ');
+</script>
+<script defer="" src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/hm.js.下载"></script>
+
+
+<div style="z-index: 998; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; flex-direction: column; align-items: center; justify-content: center">
+<div style="background: #fff;padding: 30px; margin: 30px; border-radius: 16px;">
+  <div style="width: 200px; height: 200px; background: rgba(255, 255, 255, 0.8); position: absolute; top: -100px; right: -100px; border-radius: 100px"></div>
+  <div style="text-align: center; font-size: 18px; margin-bottom: 10px;">点击右上角即可分享</div>
+  <img src="./mybatis一级缓存和二级缓存使用详解 - 共感的艺术 - 博客园_files/35695-20230906145857937-1471873834.gif" alt="微信分享提示">
+</div>   
+    </div></body></html>

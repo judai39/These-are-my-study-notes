@@ -1,0 +1,8 @@
+1.	Factory与ApplicationContext相仿，都是为了给类似于bean对象这种数据创建容器
+2.	Factory的创建离不开Resource（BeanDefinitionReader及其子类可以读取Resources，Factory创建
+	出的工厂是空容器，需要读取BeanDefinitionReader所读取的xml信息）
+3.	BeanFactory是所有工厂方法的父类，类似于Object
+4.	Resource的本质其实就是代表路径的字符串，Factory通过获取Resource路径，再通过loader()装载形成容器
+5. 	普通容器类：ApplicationContext 	AnnotationConfigApplicationContext
+
+⭐不存在什么AnnotationConfigApplicationContext的工厂容器（前者已经是容器了），factory不是思想，而是容器
